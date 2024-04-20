@@ -11,8 +11,8 @@ type SiteConfig = {
 };
 
 const siteConfig = {
-  name: "Remix Template",
-  description: "Remix with shadcn/ui, TailwindCSS, MongoDB, Prisma and more",
+  name: "DEI Application Form",
+  description: "", // TODO: Update accordingly
   navLinks: {
     "/": {
       text: "Dashboard",
