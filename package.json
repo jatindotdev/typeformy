@@ -6,7 +6,8 @@
     "dev": "remix vite:dev",
     "build": "remix vite:build",
     "start": "remix-serve ./build/server/index.js",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "lint": "biome check .",
+    "lint:fix": "biome check . --apply-unsafe",
     "typecheck": "tsc"
   },
   "dependencies": {
