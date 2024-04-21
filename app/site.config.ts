@@ -11,27 +11,9 @@ type SiteConfig = {
 };
 
 const siteConfig = {
-  name: 'DEI Application Form',
-  description: '', // TODO: Update accordingly
-  navLinks: {
-    '/': {
-      text: 'Dashboard',
-      to: '/dashboard',
-    },
-    '/dashboard': {
-      text: 'Home',
-      to: '/',
-    },
-    '/sign-in': {
-      text: 'Sign Up',
-      to: '/sign-up',
-    },
-    '/sign-up': {
-      text: 'Sign In',
-      to: '/sign-in',
-    },
-  },
-  sessionName: '__remix_template_session',
+  name: 'Typeformy',
+  description: 'An open source Typeform alternative.',
+  sessionName: '__typeformy__session',
 };
 
 export default siteConfig as SiteConfig;
