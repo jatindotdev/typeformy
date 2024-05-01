@@ -2,7 +2,7 @@
 
 An open source Typeform alternative built with Remix and Supabase.
 
-> [!INFO]
+> [!IMPORTANT]
 > Work in progress!!
 
 <kbd>
