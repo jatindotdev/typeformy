@@ -1,10 +1,10 @@
-import { ArrowRight, Check, TriangleAlert } from 'lucide-react';
-import { Button } from './button';
-import { Input } from './input';
 import { motion } from 'framer-motion';
-import { cn } from '~/lib/utils';
+import { ArrowRight, Check, TriangleAlert } from 'lucide-react';
 import { useValidate } from '~/hooks/use-validation';
+import { cn } from '~/lib/utils';
+import { Button } from './button';
 import { DatePicker } from './date-picker';
+import { Input } from './input';
 import { PhoneInput } from './phone-input';
 
 export interface Question {

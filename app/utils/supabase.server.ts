@@ -1,4 +1,4 @@
-import { createServerClient, serialize, parse } from '@supabase/ssr';
+import { createServerClient, parse, serialize } from '@supabase/ssr';
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from './env.server';
 
 export function createClient(request: Request) {

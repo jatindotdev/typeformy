@@ -1,5 +1,3 @@
-import '~/styles/globals.css';
-import siteConfig from '~/site.config';
 import {
   Links,
   Meta,
@@ -7,6 +5,8 @@ import {
   Scripts,
   ScrollRestoration,
 } from '@remix-run/react';
+import siteConfig from '~/site.config';
+import '~/styles/globals.css';
 import { Toaster } from './components/ui/sonner';
 
 export default function App() {

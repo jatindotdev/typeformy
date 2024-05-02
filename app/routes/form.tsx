@@ -1,14 +1,14 @@
 'use client';
 
 import { AnimatePresence } from 'framer-motion';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { toast } from 'sonner';
 import { Loader } from '~/components/loader';
 import { Button } from '~/components/ui/button';
 import { FormInput, type Question } from '~/components/ui/form-input';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { answers, currentQuestion, questions } from '~/lib/store';
 import { useValidate } from '~/hooks/use-validation';
-import { toast } from 'sonner';
+import { answers, currentQuestion, questions } from '~/lib/store';
 
 interface CreateQuestionsProps {
   questions: Question[];
