@@ -1,8 +1,16 @@
 import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons';
+import { useFetcher } from '@remix-run/react';
 import { motion } from 'framer-motion';
+import { useAtomValue } from 'jotai';
 import { ArrowRight, Check, TriangleAlert, XIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useValidate } from '~/hooks/use-validation';
+import {
+  answers as answersStore,
+  currentQuestion,
+  questionsStore,
+} from '~/lib/store';
+import type { Question } from '~/lib/types';
 import { cn } from '~/lib/utils';
 import { Button } from './button';
 import {
@@ -16,15 +24,6 @@ import { DatePicker } from './date-picker';
 import { Input } from './input';
 import { PhoneInput } from './phone-input';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
-
-export interface Question {
-  id: string;
-  text: string;
-  required: boolean;
-  type: 'text' | 'email' | 'date' | 'tel' | 'url' | 'dropdown';
-  metadata?: Record<string, unknown>;
-  // TODO: add more field types like radio, checkbox, etc.
-}
 
 interface FormInputProps {
   question: Question;
@@ -42,16 +41,47 @@ export const FormInput: React.FC<FormInputProps> = ({
   const { validate, value, error, onChange } = useValidate({
     type,
   });
+  const fetcher = useFetcher();
+  const questions = useAtomValue(questionsStore);
+  const currentQuestionIndex = useAtomValue(currentQuestion);
+  const answers = useAtomValue(answersStore);
+
+  const handleNext = () => {
+    if (!(!required || validate())) {
+      return;
+    }
+
+    onSubmit(value);
+  };
 
   const handleSubmit = () => {
-    if (!required || validate()) {
-      onSubmit(value);
+    if (!(!required || validate())) {
+      return;
     }
+
+    const body = Object.entries(answers).map(([key, value]) => ({
+      questionId: key,
+      answer: value?.text,
+    }));
+
+    console.log("result:", body);
+
+    // fetcher.submit(
+    //   {
+    //     answers: JSON.stringify(body),
+    //   },
+    //   {
+    //     method: 'POST',
+    //     action: '/form',
+    //   }
+    // );
   };
 
   useEffect(() => {
-    console.log(type, value);
+    console.log(`${type} => ${value || 'empty'}`);
   }, [type, value]);
+
+  const isLastQuestion = currentQuestionIndex === questions.length - 1;
 
   return (
     <motion.div
@@ -103,14 +133,27 @@ export const FormInput: React.FC<FormInputProps> = ({
             <div className="flex items-center gap-2">
               <Button
                 className="gap-1 p-5 text-lg font-semibold"
-                onClick={handleSubmit}
+                onClick={isLastQuestion ? handleSubmit : handleNext}
+                disabled={fetcher.state !== 'idle'}
               >
-                OK
-                <Check className="size-5" strokeWidth={2.5} />
+                {isLastQuestion
+                  ? fetcher.state === 'submitting'
+                    ? 'Submitting...'
+                    : 'Submit'
+                  : 'OK'}
+                {!isLastQuestion && (
+                  <Check className="size-5" strokeWidth={2.5} />
+                )}
               </Button>
-              <span className="text-xs">
-                press <strong>Enter</strong> ↵
-              </span>
+              {isLastQuestion ? (
+                <span className="text-xs">
+                  press <strong>Cmd</strong> ⌘ + <strong>Enter</strong> ↵
+                </span>
+              ) : (
+                <span className="text-xs">
+                  press <strong>Enter</strong> ↵
+                </span>
+              )}
             </div>
           )}
         </div>
@@ -166,7 +209,7 @@ const DynamicFormInput: React.FC<DyanmicFormInputProps> = ({
     const inputRef = useRef<HTMLInputElement>(null);
     const [open, setOpen] = useState(false);
 
-    const multiple = (metadata?.multiple || false) as boolean;
+    const multiple = metadata?.multiple ?? false;
 
     const [selected, setSelected] = useState(
       value
@@ -193,7 +236,12 @@ const DynamicFormInput: React.FC<DyanmicFormInputProps> = ({
       }
 
       setSelected(newSelected);
-      onChange(newSelected.join(', '));
+      onChange(
+        newSelected
+          .map(value => options.find(option => option.value === value)?.label)
+          .filter(Boolean)
+          .join(', ')
+      );
       if (!multiple) {
         setOpen(false);
       }
@@ -211,7 +259,10 @@ const DynamicFormInput: React.FC<DyanmicFormInputProps> = ({
 
     return (
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger className="flex w-full justify-center items-center focus-visible:outline-none">
+        <PopoverTrigger
+          className="flex w-full justify-center items-center focus-visible:outline-none"
+          tabIndex={-1}
+        >
           <Input
             ref={inputRef}
             placeholder="Select an option..."

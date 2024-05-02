@@ -11,8 +11,8 @@ import {
   string,
   url,
 } from 'valibot';
-import type { Question } from '~/components/ui/form-input';
 import { answer, error } from '~/lib/store';
+import type { Question } from '~/lib/types';
 
 const createValidationSchema = (type: Question['type']) => {
   switch (type) {

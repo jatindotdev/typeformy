@@ -1,20 +1,22 @@
-'use client';
-
+import { useLoaderData } from '@remix-run/react';
 import { AnimatePresence } from 'framer-motion';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Loader } from '~/components/loader';
 import { Button } from '~/components/ui/button';
-import { FormInput, type Question } from '~/components/ui/form-input';
+import { FormInput } from '~/components/ui/form-input';
 import { useValidate } from '~/hooks/use-validation';
-import { currentQuestion, questions } from '~/lib/store';
+import { currentQuestion, questionsStore } from '~/lib/store';
+import type { Question } from '~/lib/types';
 
 interface CreateQuestionsProps {
   questions: Question[];
 }
 
-const createQuestions = ({ questions }: CreateQuestionsProps) => {
+const createQuestions = () => {
+  const questions = useAtomValue(questionsStore);
   const setQuestionIndex = useSetAtom(currentQuestion);
+
   return questions.map((question, index) => {
     return {
       question: (
@@ -23,7 +25,7 @@ const createQuestions = ({ questions }: CreateQuestionsProps) => {
           question={question}
           index={index + 1}
           onSubmit={value => {
-            console.log(value);
+            console.log(question.text, value);
             setQuestionIndex(prev => prev + 1);
           }}
         />
@@ -35,13 +37,74 @@ const createQuestions = ({ questions }: CreateQuestionsProps) => {
   });
 };
 
+export const loader = async () => {
+  const questions = [
+    {
+      id: '1',
+      text: "First off, what's your name?",
+      required: true,
+      type: 'text',
+    },
+    {
+      id: '2',
+      text: 'What is your email?',
+      required: true,
+      type: 'email',
+    },
+    {
+      id: '3',
+      text: 'What is your phone number?',
+      required: true,
+      type: 'tel',
+    },
+    {
+      id: '4',
+      text: 'Yours website URL?',
+      required: false,
+      type: 'url',
+    },
+    {
+      id: '5',
+      text: 'What is your date of birth?',
+      required: true,
+      type: 'date',
+    },
+    {
+      id: '6',
+      text: 'Country?',
+      required: true,
+      type: 'dropdown',
+      metadata: {
+        // multiple: true, // can be used for multi-select dropdown
+        options: [
+          'India',
+          'United States',
+          'United Kingdom',
+          'Australia',
+          'Zimbabwe',
+        ],
+      },
+    },
+  ] satisfies Question[];
+
+  return {
+    questions,
+  };
+};
+
 export default function Form() {
+  const [questions, setQuestions] = useAtom(questionsStore);
+
+  const data = useLoaderData<typeof loader>();
+  setQuestions(data.questions);
+
   const [questionIndex, setQuestionIndex] = useAtom(currentQuestion);
-  const questionsField = createQuestions({ questions });
+  const questionsField = createQuestions();
 
   const handleNext = () => {
     const { validate } = questionsField[questionIndex].props;
-    if (validate()) {
+    const required = questions[questionIndex].required;
+    if (!required || validate()) {
       setQuestionIndex(prev => prev + 1);
     }
   };
@@ -51,13 +114,11 @@ export default function Form() {
   };
 
   return (
-    <section className="w-full flex flex-col justify-center h-screen relative">
+    <section className="w-full flex flex-col justify-center h-screen overflow-hidden">
       <Loader progress={((questionIndex + 1) / questions.length) * 100} />
-      <div className="h-screen">
-        <AnimatePresence>
-          {questionsField[questionIndex].question}
-        </AnimatePresence>
-      </div>
+      <AnimatePresence>
+        {questionsField[questionIndex].question}
+      </AnimatePresence>
       <div className="absolute bottom-0 left-0 right-0 p-4 bg-white">
         <div className="flex justify-end items-center">
           <Button
