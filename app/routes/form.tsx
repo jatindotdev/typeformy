@@ -1,21 +1,20 @@
 'use client';
 
 import { AnimatePresence } from 'framer-motion';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { toast } from 'sonner';
 import { Loader } from '~/components/loader';
 import { Button } from '~/components/ui/button';
 import { FormInput, type Question } from '~/components/ui/form-input';
 import { useValidate } from '~/hooks/use-validation';
-import { answers, currentQuestion, questions } from '~/lib/store';
+import { currentQuestion, questions } from '~/lib/store';
 
 interface CreateQuestionsProps {
   questions: Question[];
 }
 
 const createQuestions = ({ questions }: CreateQuestionsProps) => {
-  const [, setQuestionIndex] = useAtom(currentQuestion);
+  const setQuestionIndex = useSetAtom(currentQuestion);
   return questions.map((question, index) => {
     return {
       question: (
@@ -23,9 +22,9 @@ const createQuestions = ({ questions }: CreateQuestionsProps) => {
           key={question.id}
           question={question}
           index={index + 1}
-          onSubmit={e => {
-            toast(e);
-            // setQuestionIndex(prev => prev + 1);
+          onSubmit={value => {
+            console.log(value);
+            setQuestionIndex(prev => prev + 1);
           }}
         />
       ),

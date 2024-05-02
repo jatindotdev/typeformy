@@ -1,14 +1,15 @@
 import { useAtom, useSetAtom } from 'jotai';
+import { isValidPhoneNumber } from 'react-phone-number-input';
 import {
-  url,
   ValiError,
   coerce,
+  custom,
   date,
   email,
   minLength,
   parse,
-  regex,
   string,
+  url,
 } from 'valibot';
 import type { Question } from '~/components/ui/form-input';
 import { answer, error } from '~/lib/store';
@@ -16,14 +17,17 @@ import { answer, error } from '~/lib/store';
 const createValidationSchema = (type: Question['type']) => {
   switch (type) {
     case 'email':
-      return string([email("Hmm... that email doesn't look right")]);
+      return string([email("Hmm... that email doesn't look right.")]);
     case 'tel':
       return string([
-        regex(/^(?:\+\d{1,3}[- ]?)?\d{10}$/, 'Invalid phone number'),
+        custom(
+          value => isValidPhoneNumber(value),
+          "Hmm... that phone number doesn't look right."
+        ),
       ]);
     case 'url':
       return string([
-        url("Hmm... that URL doesn't look right. Please check again"),
+        url("Hmm... that URL doesn't look right. Please check again!"),
       ]);
     case 'date':
       return coerce(
@@ -31,7 +35,7 @@ const createValidationSchema = (type: Question['type']) => {
         value => new Date(value as string)
       );
     default:
-      return string([minLength(1, 'This field is required')]);
+      return string([minLength(1, 'This field is required.')]);
   }
 };
 

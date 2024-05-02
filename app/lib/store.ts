@@ -32,6 +32,22 @@ export const questions = [
     required: true,
     type: 'date',
   },
+  {
+    id: '6',
+    text: 'Country?',
+    required: true,
+    type: 'dropdown',
+    metadata: {
+      // mutliple: true, // can be used for multi-select dropdown
+      options: [
+        'India',
+        'United States',
+        'United Kingdom',
+        'Australia',
+        'Zimbabwe',
+      ],
+    },
+  },
 ] as Question[];
 
 interface Answers {
