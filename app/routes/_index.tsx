@@ -1,7 +1,7 @@
-import siteConfig from '~/site.config';
 import type { MetaFunction } from '@remix-run/node';
-import { Button } from '~/components/ui/button';
 import { Link } from '@remix-run/react';
+import { Button } from '~/components/ui/button';
+import siteConfig from '~/site.config';
 
 export const meta: MetaFunction = () => {
   return [
