@@ -1,4 +1,4 @@
-# Typeformy
+# Typeform
 
 An open source Typeform alternative built with Remix and Supabase.
 
